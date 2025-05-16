@@ -15,9 +15,9 @@
         "title": "magic-control",
         "width": 800,
         "height": 600,
-        "decorations": false,
+        "decorations": true,
         "resizable": true,
-        "devtools": false
+        "devtools": true
       }
     ],
     "security": {

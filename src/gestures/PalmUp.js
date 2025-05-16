@@ -15,3 +15,4 @@ PalmUp.addDirection(Finger.Thumb, FingerDirection.DiagonalUpLeft, 0.8);
 PalmUp.addDirection(Finger.Index, FingerDirection.VerticalUp, 0.8);
 PalmUp.addDirection(Finger.Middle, FingerDirection.VerticalUp, 0.8);
 PalmUp.addDirection(Finger.Ring, FingerDirection.VerticalUp, 0.7);
+

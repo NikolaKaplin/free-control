@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { Hands, HAND_CONNECTIONS} from '@mediapipe/hands';
-  import { Camera } from '@mediapipe/camera_utils';
-  import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
-  import {sendMousePosition} from "$lib/mouse-control";
-
+  import { onMount } from "svelte";
+  import { Hands, HAND_CONNECTIONS } from "@mediapipe/hands";
+  import { Camera } from "@mediapipe/camera_utils";
+  import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
+  import { sendMousePosition } from "$lib/mouse-control";
   let videoElement: HTMLVideoElement;
   let canvasElement: HTMLCanvasElement;
   let camera: Camera | null = null;
@@ -12,18 +11,19 @@
   let lastSentTime = 0;
   const SEND_INTERVAL = 16; // ~60 FPS (в миллисекундах)
 
+  let emoji = $state();
   // Конфигурация MediaPipe Hands
   const hands = new Hands({
     locateFile: (file) => {
       return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-    }
+    },
   });
 
   hands.setOptions({
     maxNumHands: 1,
     modelComplexity: 1,
     minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5
+    minTrackingConfidence: 0.5,
   });
 
   hands.onResults((handResults) => {
@@ -46,28 +46,31 @@
 
   // Функция для отправки координат в Rust
 
-
   // Функция для отрисовки результатов
   const drawResults = (results: any) => {
-    const canvasCtx = canvasElement.getContext('2d');
+    const canvasCtx = canvasElement.getContext("2d");
     if (!canvasCtx) return;
 
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
     canvasCtx.drawImage(
-            results.image, 0, 0, canvasElement.width, canvasElement.height
+      results.image,
+      0,
+      0,
+      canvasElement.width,
+      canvasElement.height,
     );
 
     if (results.multiHandLandmarks) {
       for (const landmarks of results.multiHandLandmarks) {
         drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
-          color: '#00FF00',
-          lineWidth: 2
+          color: "#00FF00",
+          lineWidth: 2,
         });
         drawLandmarks(canvasCtx, landmarks, {
-          color: '#FF0000',
+          color: "#FF0000",
           lineWidth: 1,
-          radius: 2
+          radius: 2,
         });
       }
     }
@@ -76,13 +79,13 @@
 
   // Инициализация камеры
   onMount(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       camera = new Camera(videoElement, {
         onFrame: async () => {
           await hands.send({ image: videoElement });
         },
         width: 640,
-        height: 480
+        height: 480,
       });
       camera.start();
     }
@@ -99,7 +102,7 @@
 
     // Индексы кончиков пальцев в landmarks массиве
     const fingerTips = [4, 8, 12, 16, 20];
-    const fingerNames = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
+    const fingerNames = ["Thumb", "Index", "Middle", "Ring", "Pinky"];
 
     return fingerTips.map((tipIdx, i) => {
       const tip = landmarks[tipIdx];
@@ -107,7 +110,7 @@
         name: fingerNames[i],
         x: tip.x,
         y: tip.y,
-        z: tip.z
+        z: tip.z,
       };
     });
   };
@@ -135,18 +138,13 @@
 <div class="hand-tracking-container">
   <h2>Hand Tracking with MediaPipe</h2>
 
-  <video
-          bind:this={videoElement}
-          class="input_video "
-          hidden
-  ></video>
+  <video bind:this={videoElement} class="input_video" hidden></video>
 
   <canvas
-          bind:this={canvasElement}
-          class="output_canvas hamburger-menu pause-button fps-60"
-          width="1920"
-          height="1080"
-
+    bind:this={canvasElement}
+    class="output_canvas hamburger-menu pause-button fps-60"
+    width="1920"
+    height="1080"
   ></canvas>
 
   {#if results}

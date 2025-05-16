@@ -1,9 +1,9 @@
-import {invoke} from "@tauri-apps/api/core";
+import { invoke } from "@tauri-apps/api/core";
 
 let lastX = 0;
 let lastY = 0;
 let isSending = false;
-const queue: {x: number, y: number}[] = [];
+const queue: { x: number, y: number }[] = [];
 
 export async function sendMousePosition(x: number, y: number) {
     // Дебаунс и дедупликация координат
@@ -11,7 +11,7 @@ export async function sendMousePosition(x: number, y: number) {
 
     lastX = x;
     lastY = y;
-    queue.push({x, y});
+    queue.push({ x, y });
 
     if (!isSending) {
         isSending = true;
@@ -25,9 +25,11 @@ async function processQueue() {
         return;
     }
 
-    const {x, y} = queue.shift()!;
+    const cords = {
+        cords: queue.shift()!
+    }
     try {
-        await invoke('mouse_move', { x, y });
+        await invoke('mouse_move', cords);
     } catch (e) {
         console.error('Mouse move error:', e);
     }
